@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import math
+import sys
+import os
+
+cm_per_inch = 2.54
+
+ratios_human = {
+        9.0/21.0:"21:9",
+        10.0/16.0:"16:10",
+        9.0/16.0:"16:9",
+        4.0/5.0:"5:4",
+        3.0/4.0:"4:3",
+        }
+
+def main():
+  if len(sys.argv) != 4:
+    print("Calculate DPI (dots per inch) for a given display resolution and diagonal size")
+    print(f"usage: {os.path.basename(sys.argv[0])} <hor. res> <vert. res> <diag. in inches>")
+    sys.exit(1)
+
+  hres = int(sys.argv[1])
+  vres = int(sys.argv[2])
+  diag_inch = float(sys.argv[3])
+  ratio = vres / hres
+  angle = math.atan(ratio)
+    
+  ratio_human = None
+  if ratio in ratios_human:
+    ratio_human = ratios_human[ratio]
+  
+  width_inch = math.cos(angle) * diag_inch
+  height_inch = math.sin(angle) * diag_inch
+  
+  width_cm = width_inch * cm_per_inch
+  height_cm = height_inch * cm_per_inch
+  
+  dpi = hres / width_inch
+
+  pixelsize_inch = 1 / dpi
+  pixelsize_mm = pixelsize_inch * cm_per_inch * 10
+  
+  print(f"Calculating for {hres}x{vres} @ {diag_inch:.1f}\"\n")
+  print(f"Width: {width_inch:.2f}\" / {width_cm:.2f} cm")
+  print(f"Height: {height_inch:.2f}\" / {height_cm:.2f} cm")
+  print(f"Aspect ratio: {1.0/ratio:.2f}", end = '')
+  if ratio_human:
+      print(f" ({ratio_human})")
+  else:
+      print()
+
+  print(f"DPI: {dpi:.2f}")
+  print(f"Size of a pixel: {pixelsize_mm:.2f} mm")
+
+if __name__ == '__main__':
+  main()
